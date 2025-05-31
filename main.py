@@ -14,7 +14,8 @@ def form_get(request: Request):
     return templates.TemplateResponse("form.html", {"request": request})
 
 @app.post("/predict", response_class=HTMLResponse)
-def predict(request: Request, Age: float = Form(...), Sex: float = Form(...), BP: float = Form(...), Cholesterol: float = Form(...),Na_to_K: float = Form(...)):
+def predict(request: Request, Age: float = Form(...), Sex: float = Form(...), BP: float = Form(...), 
+            Cholesterol: float = Form(...),Na_to_K: float = Form(...)):
     features = np.array([[Age, Sex, BP, Cholesterol, Na_to_K]])
     prediction = model.predict(features)[0]
     return templates.TemplateResponse("form.html", {"request": request, "result": f"Predicción: Clase {prediction}"})

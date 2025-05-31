@@ -1,19 +1,223 @@
 <!DOCTYPE html>
-<html>
-<head><title>Predicción de medicina</title></head>
-<body>
-  <h2>Formulario para predicción</h2>
-  <form action="/predict" method="post">
-    <label>Age:</label><input type="number" step="any" name="Age"><br>
-    <label>Sex:</label><input type="number" step="any" name="Sex"><br>
-    <label>BP:</label><input type="number" step="any" name="BP"><br>
-    <label>Cholesterol:</label><input type="number" step="any" name="Cholesterol"><br>
-    <label>Na_to_K:</label><input type="number" step="any" name="Na_to_K"><br>
-    <button type="submit">Predecir</button>
-  </form>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicción de Medicamento</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  {% if result %}
-    <h3>{{ result }}</h3>
-  {% endif %}
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 300;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: #f9f9f9;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .btn-predict {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-predict:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-text {
+            color: #777;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .icon {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Predicción de Medicamento</h1>
+        
+        <form action="/predict" method="post">
+            <div class="form-group">
+                <label for="age">
+                    <span class="icon"></span>Edad
+                </label>
+                <input type="number" id="age" name="Age" min="1" max="120" required placeholder="Ingrese su edad">
+                <div class="info-text">Rango: 1-120 años</div>
+            </div>
+
+            <div class="form-group">
+                <label for="sex">
+                    <span class="icon">👤</span>Sexo
+                </label>
+                <select id="sex" name="Sex" required>
+                    <option value="">Seleccione su sexo</option>
+                    <option value="0">Femenino</option>
+                    <option value="1">Masculino</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="bp">
+                    <span class="icon"></span>Presión Arterial
+                </label>
+                <select id="bp" name="BP" required>
+                    <option value="">Seleccione nivel de presión</option>
+                    <option value="0">Alta (High)</option>
+                    <option value="1">Baja (Low)</option>
+                    <option value="2">Normal</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="cholesterol">
+                    <span class="icon"></span>Colesterol
+                </label>
+                <select id="cholesterol" name="Cholesterol" required>
+                    <option value="">Seleccione nivel de colesterol</option>
+                    <option value="0">Alto (High)</option>
+                    <option value="1">Normal</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="na_to_k">
+                    <span class="icon"></span>Ratio Sodio/Potasio (Na_to_K)
+                </label>
+                <input type="number" id="na_to_k" name="Na_to_K" step="0.001" min="0" required placeholder="Ej: 25.355">
+                <div class="info-text">Valor numérico con decimales</div>
+            </div>
+
+            <button type="submit" class="btn-predict">
+                🔮 Predecir Medicamento
+            </button>
+        </form>
+
+        {% if result %}
+        <div class="result">
+            <div>{{ result }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Agregar interactividad
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const submitBtn = document.querySelector('.btn-predict');
+            
+            // Animación del botón al enviar
+            form.addEventListener('submit', function() {
+                submitBtn.innerHTML = ' .....';
+                submitBtn.disabled = true;
+            });
+
+            // Validación en tiempo real
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    if (this.value) {
+                        this.style.borderColor = '#11998e';
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
