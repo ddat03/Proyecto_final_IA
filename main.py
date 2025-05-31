@@ -18,4 +18,4 @@ def predict(request: Request, Age: float = Form(...), Sex: float = Form(...), BP
             Cholesterol: float = Form(...),Na_to_K: float = Form(...)):
     features = np.array([[Age, Sex, BP, Cholesterol, Na_to_K]])
     prediction = model.predict(features)[0]
-    return templates.TemplateResponse("form.html", {"request": request, "result": f"Predicción: Clase {prediction}"})
+    return templates.TemplateResponse("form.html", {"request": request, "result": f"Medicamento sugerido: Clase {prediction}"})
